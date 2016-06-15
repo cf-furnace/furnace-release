@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+absolute_path() {
+  (cd $1 && pwd)
+}
+
+scripts_path=$(absolute_path `dirname $0`)
+
+DUCATI_RELEASE_DIR=${DUCATI_RELEASE_DIR:-$(absolute_path $scripts_path/..)}
+DIEGO_RELEASE_DIR=${DIEGO_RELEASE_DIR:-$(absolute_path $DUCATI_RELEASE_DIR/../diego-release)}
+
+DIEGO_MANIFESTS_DIR=$DIEGO_RELEASE_DIR/bosh-lite/deployments
+DUCATI_MANIFESTS_DIR=$DUCATI_RELEASE_DIR/bosh-lite/deployments
+
+mkdir -p ${DUCATI_MANIFESTS_DIR}
+
+( cd ${DIEGO_RELEASE_DIR} && ./scripts/generate-bosh-lite-manifests -g )
+
+${scripts_path}/ducatify ${DIEGO_MANIFESTS_DIR}/diego.yml "$@" | \
+    sed 's/\ guardian/\ garden-runc/' \
+    > ${DUCATI_MANIFESTS_DIR}/diego_with_ducati.yml

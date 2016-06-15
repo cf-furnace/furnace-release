@@ -1,0 +1,7 @@
+---
+name: k8s-nsync
+
+templates: {}
+
+packages:
+  - k8s-nsync

@@ -1,0 +1,55 @@
+---
+name: furnace
+
+# replace with bosh status --uuid
+director_uuid: <%= `bosh target lite > /dev/null 2>&1 && bosh status --uuid` %>
+
+releases:
+- name: furnace
+  version: latest
+
+resource_pools:
+- name: furnace
+  network: furnace
+  stemcell:
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    version: latest
+  cloud_properties:
+    name: random
+
+networks:
+- name: furnace
+  subnets:
+  - range: 10.244.18.0/24
+    reserved: [10.244.18.1]
+    static:
+    - &bridge_address 10.244.18.9
+    cloud_properties:
+      name: random
+
+properties: {}
+
+jobs:
+- name: furnace-cc-bridge
+  instances: 1
+  templates:
+    - name: k8s-nsync
+      release: furnace
+  resource_pool: furnace
+  networks:
+  - name: furnace
+    static_ips: [ *bridge_address ]
+  properties: {}
+
+compilation:
+  workers: 3
+  network: furnace
+  cloud_properties:
+    name: random
+
+update:
+  canaries: 1
+  max_in_flight: 3
+  serial: false
+  canary_watch_time: 1000-30000
+  update_watch_time: 1000-30000

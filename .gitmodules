@@ -1,0 +1,4 @@
+[submodule "src/github.com/cf-furnace/k8s-nsync"]
+	path = src/github.com/cf-furnace/k8s-nsync
+	url = https://github.com/cf-furnace/k8s-nsync
+	branch = master
