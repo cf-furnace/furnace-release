@@ -109,7 +109,7 @@ main() {
     upload_release garden-linux-release
 
     update_release cf-release release-candidate
-    update_release diego-release master
+    update_release diego-release release-candidate
     update_release kubernetes-release master
     update_release furnace-release master
 
