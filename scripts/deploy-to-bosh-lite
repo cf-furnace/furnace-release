@@ -41,7 +41,7 @@ upload_release() {
 verify_clone_exists() {
     local release_name=$1
 
-    [[ -d ${workspace_dir}/${release_name} ]] || error "${release_name} needs to be cloned"
+    [[ -d ${workspace_dir}/${release_name} ]] || error "${release_name} in ${workspace_dir} needs to be cloned"
     if [[ "$(git -C ${workspace_dir}/${release_name} rev-parse --is-inside-work-tree)" != "true" ]]; then
         error "${release_name} is not a git repo"
     fi
