@@ -12,7 +12,7 @@
 
 DNS_CLUSTER_IP=${DNS_CLUSTER_IP:-"10.254.10.254"}
 
-tmpdir=$(mktemp -p -d dns-XXXXX)
+tmpdir=$(mktemp -dt dns-XXXXX)
 
 cat >${tmpdir}/namespace.yaml <<NAMESPACE_EOF
 apiVersion: v1

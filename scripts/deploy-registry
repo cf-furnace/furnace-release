@@ -10,7 +10,7 @@
 # - kubectl get services --namespace=kube-system
 # - kubectl get rc --namespace=kube-system
 
-tmpdir=$(mktemp -p -d registry-XXXXX)
+tmpdir=$(mktemp -dt registry-XXXXX)
 
 cat >${tmpdir}/registry.yaml <<REGISTRY_EOF
 apiVersion: v1
