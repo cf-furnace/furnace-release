@@ -179,6 +179,8 @@ files:
   - k8s.io/kubernetes/vendor/github.com/davecgh/go-spew/spew/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/docker/distribution/digest/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/docker/distribution/reference/*.go # gosub
+  - k8s.io/kubernetes/vendor/github.com/docker/docker/pkg/mount/*.go # gosub
+  - k8s.io/kubernetes/vendor/github.com/docker/go-units/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/emicklei/go-restful/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/emicklei/go-restful/log/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/emicklei/go-restful/swagger/*.go # gosub
@@ -191,6 +193,10 @@ files:
   - k8s.io/kubernetes/vendor/github.com/jonboulle/clockwork/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/juju/ratelimit/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/matttproud/golang_protobuf_extensions/pbutil/*.go # gosub
+  - k8s.io/kubernetes/vendor/github.com/opencontainers/runc/libcontainer/cgroups/*.go # gosub
+  - k8s.io/kubernetes/vendor/github.com/opencontainers/runc/libcontainer/cgroups/fs/*.go # gosub
+  - k8s.io/kubernetes/vendor/github.com/opencontainers/runc/libcontainer/configs/*.go # gosub
+  - k8s.io/kubernetes/vendor/github.com/opencontainers/runc/libcontainer/system/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/pborman/uuid/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/prometheus/client_golang/prometheus/*.go # gosub
   - k8s.io/kubernetes/vendor/github.com/prometheus/client_model/go/*.go # gosub
