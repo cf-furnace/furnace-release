@@ -39,7 +39,6 @@ function sync_package() {
   )
 }
 
-sync_package k8s-nsync -app  github.com/cf-furnace/k8s-nsync/cmd/nsync &
 sync_package nsync -app  github.com/cloudfoundry-incubator/nsync/cmd/... &
 
 wait
