@@ -85,3 +85,6 @@
 [submodule "src/gopkg.in/yaml.v2"]
 	path = src/gopkg.in/yaml.v2
 	url = https://gopkg.in/yaml.v2
+[submodule "src/github.com/cloudfoundry-incubator/cf-test-helpers"]
+	path = src/github.com/cloudfoundry-incubator/cf-test-helpers
+	url = https://github.com/cloudfoundry-incubator/cf-test-helpers.git
