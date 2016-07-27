@@ -35,13 +35,39 @@ var _ = Describe("Lifecycle", func() {
 		client = clientSet.Core()
 	})
 
-	It("creates, scales, and deletes application pods", func() {
+	It("creates, scales, and deletes ruby buildpack based application pods", func() {
 		By("pushing an application")
 		Expect(cf.Cf(
 			"push", appName,
 			"-b", config.RubyBuildpackName,
 			"-m", "512M",
 			"-p", assets.NewAssets().Dora,
+			"-d", config.AppsDomain,
+		).Wait(DEFAULT_TIMEOUT)).To(Exit(0))
+
+		appGuid := strings.TrimSpace(string(cf.Cf("app", appName, "--guid").Wait(DEFAULT_TIMEOUT).Out.Contents()))
+
+		Eventually(replicationControllers(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(1))
+		Eventually(pods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(1))
+
+		By("scaling application")
+		Expect(cf.Cf("scale", appName, "-i", "3").Wait(DEFAULT_TIMEOUT)).To(Exit(0))
+
+		Eventually(pods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(3))
+
+		By("stopping application")
+		Expect(cf.Cf("stop", appName).Wait(DEFAULT_TIMEOUT)).To(Exit(0))
+
+		Eventually(replicationControllers(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(0))
+		Eventually(pods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(0))
+	})
+
+	It("creates, scales, and deletes docker based application pods", func() {
+		By("pushing an application")
+		Expect(cf.Cf(
+			"push", appName,
+			"-m", "512M",
+			"-o", "cloudfoundry/lattice-app",
 			"-d", config.AppsDomain,
 		).Wait(DEFAULT_TIMEOUT)).To(Exit(0))
 
