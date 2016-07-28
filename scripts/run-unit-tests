@@ -16,6 +16,8 @@ function join_array {
     local IFS="$1"; shift; echo "$*"
 }
 
+go install github.com/onsi/ginkgo/ginkgo || exit $?
+
 ERROR_CODE=0
 
 for dir in "${packages[@]}"; do
