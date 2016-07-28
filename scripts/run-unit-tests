@@ -16,7 +16,9 @@ function join_array {
     local IFS="$1"; shift; echo "$*"
 }
 
-go install github.com/onsi/ginkgo/ginkgo || exit $?
+if ! command -v ginkgo >/dev/null 2>&1; then
+    go install github.com/onsi/ginkgo/ginkgo || exit $?
+fi
 
 ERROR_CODE=0
 
