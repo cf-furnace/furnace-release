@@ -1,0 +1,28 @@
+#!/bin/bash
+
+script_dir=$(cd "$(dirname "$0")" && pwd)
+
+FURNACE_RELEASE_DIR=${FURNACE_RELEASE_DIR:-$(cd ${script_dir}/.. && pwd)}
+GINKGO_EXTRA_FLAGS="${GINKGO_EXTRA_FLAGS:-}"
+
+declare -a packages=(
+  "src/github.com/cloudfoundry-incubator/nsync"
+)
+
+declare -a skip_packages=(
+)
+
+function join_array {
+    local IFS="$1"; shift; echo "$*"
+}
+
+ERROR_CODE=0
+
+for dir in "${packages[@]}"; do
+    pushd ${FURNACE_RELEASE_DIR}/$dir > /dev/null
+    ginkgo -r -keepGoing -p -trace -randomizeAllSpecs -progress --race -skipPackage=$(join_array , ${skip_packages[@]}) $extraFlags "$@"
+    let ERROR_CODE+=$?
+    popd > /dev/null
+done
+
+exit ${ERROR_CODE}
