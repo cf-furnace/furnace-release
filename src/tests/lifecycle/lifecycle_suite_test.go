@@ -42,10 +42,13 @@ var _ = AfterSuite(func() {
 })
 
 type KubeConfig struct {
-	APIServer string `json:"api_server"`
-	CertFile  string `json:"cert_file"`
-	KeyFile   string `json:"key_file"`
-	CAFile    string `json:"ca_file"`
+	APIServer                 string `json:"kube_server"`
+	Username                  string `json:"kube_username"`
+	Password                  string `json:"kube_password"`
+	SkipCertificateValidation bool   `json:"skip_ssl_validation"`
+	CertFile                  string `json:"kube_cert_file"`
+	KeyFile                   string `json:"kube_key_file"`
+	CAFile                    string `json:"kube_ca_file"`
 }
 
 func loadKubeConfig() (*KubeConfig, error) {
@@ -70,7 +73,10 @@ func loadKubeConfig() (*KubeConfig, error) {
 
 func (c *KubeConfig) ClientConfig() *restclient.Config {
 	return &restclient.Config{
-		Host: c.APIServer,
+		Host:     c.APIServer,
+		Username: c.Username,
+		Password: c.Password,
+		Insecure: c.SkipCertificateValidation,
 		TLSClientConfig: restclient.TLSClientConfig{
 			CertFile: c.CertFile,
 			KeyFile:  c.KeyFile,

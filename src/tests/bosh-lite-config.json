@@ -5,5 +5,7 @@
   "apps_domain": "bosh-lite.com",
   "skip_ssl_validation": true,
   "use_http": false,
-  "api_server": "10.244.24.2:8080"
+  "kube_server": "https://10.244.24.2:6443",
+  "kube_username": "admin",
+  "kube_password": "admin"
 }
