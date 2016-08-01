@@ -1,0 +1,46 @@
+---
+name: k8s-stager
+
+templates:
+  stager_ctl.erb: bin/stager_ctl
+  dns_health_check.erb: bin/dns_health_check
+
+packages:
+  - k8s-stager
+  - utils
+
+properties:
+  k8s.cluster.url:
+    description: "kubernetes cluster API URL"
+    default: http://kube-master-0.node.cf.internal:8080
+
+  furnace.stager.id:
+    description: Identifier of the stager.
+    default: stager-0
+
+  furnace.stager.listen_address:
+    description: Address to listen on.
+    default: 0.0.0.0:8080
+
+  furnace.stager.log_level:
+    description: Logging level.
+    default: info
+
+  furnace.stager.skip_cert_verify:
+    description: Skip certificate validation when staging.
+    default: false
+
+  furnace.stager.app_lifecycle_url:
+    description: Application lifecycle URL.
+
+  furnace.stager.kubernetes_namespace:
+    description: Kubernetes namespace to use for staging.
+    default: furnace-staging
+
+  furnace.stager.staging_image:
+    description: Image to use for staging.
+    default: viovanov/stager
+
+  furnace.stager.custom_command:
+    description: Custom entrypoint to use when running the staging command.
+    default: /stager

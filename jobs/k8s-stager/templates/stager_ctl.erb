@@ -1,0 +1,56 @@
+#!/bin/bash -e
+
+RUN_DIR=/var/vcap/sys/run/k8s-stager
+LOG_DIR=/var/vcap/sys/log/k8s-stager
+CONF_DIR=/var/vcap/jobs/k8s-stager/config
+
+PIDFILE=$RUN_DIR/stager.pid
+
+source /var/vcap/packages/utils/pid_utils.sh
+
+
+case $1 in
+
+  start)
+    pid_guard $PIDFILE "stager"
+
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
+
+    echo $$ > $PIDFILE
+
+    # Work around for GOLANG 1.5.3 DNS bug
+    export GODEBUG=netdns=cgo
+
+    # Allowed number of open file descriptors
+    ulimit -n 100000
+
+    exec chpst -u vcap:vcap /var/vcap/packages/k8s-stager/bin/stager run \
+    --id <%= p('furnace.stager.id') %> \
+    --listen <%= p('furnace.stager.listen_address') %> \
+    --log-level <%= p('furnace.stager.log_level') %> \
+    --skip-cert-verify <%= p('furnace.stager.skip_cert_verify') %> \
+    --app-lifecycle-url <%= p('furnace.stager.app_lifecycle_url') %> \
+    --k8s-endpoint <%= p('k8s.cluster.url') %> \
+    --k8s-namespace <%= p('furnace.stager.kubernetes_namespace') %> \
+    --staging-image <%= p('furnace.stager.staging_image') %> \
+    --custom-image-command <%= p('furnace.stager.custom_command') %> \
+      2> >(tee -a $LOG_DIR/stager.stderr.log | logger -p user.error -t vcap.nsync-listener) \
+      1> >(tee -a $LOG_DIR/stager.stdout.log | logger -p user.info -t vcap.nsync-listener)
+
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+
+    ;;
+
+esac
