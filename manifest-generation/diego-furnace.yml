@@ -1,0 +1,10 @@
+---
+<<: (( merge ))
+
+properties:
+  <<: (( merge ))
+  capi:
+    <<: (( merge ))
+    nsync:
+      <<: (( merge ))
+      kube: (( config_from_kube.nsync ))

@@ -1,0 +1,30 @@
+---
+release_versions: {}
+bridge_overrides:
+  releases:
+  - name: furnace
+    version: latest
+base_job_templates:
+  colocated:
+    - name: rep
+      release: diego
+    - name: auctioneer
+      release: diego
+    - name: cc_uploader
+      release: cf
+    - name: file_server
+      release: diego
+    - name: garden
+      release: garden-linux
+    - name: nsync
+      release: furnace
+    - name: cflinuxfs2-rootfs-setup
+      release: cflinuxfs2-rootfs
+    - name: route_emitter
+      release: diego
+    - name: ssh_proxy
+      release: diego
+    - name: stager
+      release: cf
+    - name: tps
+      release: cf
