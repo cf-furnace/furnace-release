@@ -31,13 +31,18 @@ case $1 in
     exec chpst -u vcap:vcap /var/vcap/packages/k8s-stager/bin/stager run \
     --id <%= p('furnace.stager.id') %> \
     --listen <%= p('furnace.stager.listen_address') %> \
+    --port <%= p('furnace.stager.port') %> \
+    --advertise-address <%= p('furnace.stager.advertise-address') %> \
     --log-level <%= p('furnace.stager.log_level') %> \
     --skip-cert-verify <%= p('furnace.stager.skip_cert_verify') %> \
     --app-lifecycle-url <%= p('furnace.stager.app_lifecycle_url') %> \
-    --k8s-endpoint <%= p('k8s.cluster.url') %> \
+    --k8s-endpoint <%= p('kube.cluster.url') %> \
     --k8s-namespace <%= p('furnace.stager.kubernetes_namespace') %> \
     --staging-image <%= p('furnace.stager.staging_image') %> \
     --custom-image-command <%= p('furnace.stager.custom_command') %> \
+    --k8s-client-cert ${CONF_DIR}/certs/kube/client-cert.pem \
+    --k8s-client-key ${CONF_DIR}/certs/kube/client-key.pem \
+    --k8s-cacert ${CONF_DIR}/certs/kube/ca-cert.pem \
       2> >(tee -a $LOG_DIR/stager.stderr.log | logger -p user.error -t vcap.nsync-listener) \
       1> >(tee -a $LOG_DIR/stager.stdout.log | logger -p user.info -t vcap.nsync-listener)
 
