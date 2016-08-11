@@ -1,0 +1,8 @@
+---
+name: k8s-stager
+
+dependencies:
+- golang
+
+files:
+  - github.com/cf-furnace/k8s-stager/**/*.go

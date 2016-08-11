@@ -1,0 +1,73 @@
+---
+name: k8s-stager
+
+templates:
+  stager_ctl.erb: bin/stager_ctl
+  dns_health_check.erb: bin/dns_health_check
+  kube_ca.crt.erb: config/certs/kube/ca-cert.pem
+  kube_client.crt.erb: config/certs/kube/client-cert.pem
+  kube_client.key.erb: config/certs/kube/client-key.pem
+
+packages:
+  - k8s-stager
+  - utils
+
+properties:
+  kube.cluster.url:
+    description: "kubernetes cluster API URL"
+    default: https://kube-apiserver.service.cf.internal:6443
+  capi.nsync.kube.ca_cert:
+    description: "PEM-encoded CA certificate"
+  capi.nsync.kube.client_cert:
+    description: "PEM-encoded client certificate"
+  capi.nsync.kube.client_key:
+    description: "PEM-encoded client key"
+
+  furnace.stager.advertise-address:
+    description: "Address of stager, as used by other components."
+    default: k8s-stager.service.cf.internal
+
+  furnace.stager.id:
+    description: Identifier of the stager.
+    default: stager-0
+
+  furnace.stager.listen_address:
+    description: Address to listen on.
+    default: 0.0.0.0
+
+  furnace.stager.port:
+    description: Port to listen on.
+    default: 8080
+
+  furnace.stager.log_level:
+    description: Logging level.
+    default: info
+
+  furnace.stager.skip_cert_verify:
+    description: Skip certificate validation when staging.
+    default: false
+
+  furnace.stager.app_lifecycle_url:
+    description: Application lifecycle URL.
+
+  furnace.stager.kubernetes_namespace:
+    description: Kubernetes namespace to use for staging.
+    default: furnace-staging
+
+  furnace.stager.staging_image:
+    description: Image to use for staging.
+    default: viovanov/stager
+
+  furnace.stager.custom_command:
+    description: Custom entrypoint to use when running the staging command.
+    default: /stager
+
+  furnace.stager.cc_baseurl:
+    description: Cloud controller API location.
+    default: http://cloud-controller-ng.service.cf.internal:9022
+
+  furnace.stager.cc_username:
+    description: Cloud Controller internal API username.
+
+  furnace.stager.cc_password:
+    description: Cloud Controller internal API password.

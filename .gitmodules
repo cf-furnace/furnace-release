@@ -103,3 +103,6 @@
 [submodule "src/github.com/nats-io/nuid"]
 	path = src/github.com/nats-io/nuid
 	url = https://github.com/nats-io/nuid
+[submodule "src/github.com/cf-furnace/k8s-stager"]
+	path = src/github.com/cf-furnace/k8s-stager
+	url = https://github.com/cf-furnace/k8s-stager
