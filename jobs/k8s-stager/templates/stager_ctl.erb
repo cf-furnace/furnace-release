@@ -43,6 +43,9 @@ case $1 in
     --k8s-client-cert ${CONF_DIR}/certs/kube/client-cert.pem \
     --k8s-client-key ${CONF_DIR}/certs/kube/client-key.pem \
     --k8s-cacert ${CONF_DIR}/certs/kube/ca-cert.pem \
+    --cc-baseurl <%= p('furnace.stager.cc_baseurl') %> \
+    --cc-username <%= p('furnace.stager.cc_username') %> \
+    --cc-password <%= p('furnace.stager.cc_password') %> \
       2> >(tee -a $LOG_DIR/stager.stderr.log | logger -p user.error -t vcap.nsync-listener) \
       1> >(tee -a $LOG_DIR/stager.stdout.log | logger -p user.info -t vcap.nsync-listener)
 

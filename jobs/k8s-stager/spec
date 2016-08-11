@@ -61,3 +61,13 @@ properties:
   furnace.stager.custom_command:
     description: Custom entrypoint to use when running the staging command.
     default: /stager
+
+  furnace.stager.cc_baseurl:
+    description: Cloud controller API location.
+    default: http://cloud-controller-ng.service.cf.internal:9022
+
+  furnace.stager.cc_username:
+    description: Cloud Controller internal API username.
+
+  furnace.stager.cc_password:
+    description: Cloud Controller internal API password.
