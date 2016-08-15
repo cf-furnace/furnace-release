@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: routing-test
+  namespace: default
+spec:
+  hostNetwork: true
+  nodeSelector:
+    kubernetes.io/hostname: boot2docker
+  containers:
+  - image: sykesm/furnace-network-ci:v0.9
+    name: linux
+    command:
+      - sleep
+      - "3600"
+    securityContext:
+      privileged: true

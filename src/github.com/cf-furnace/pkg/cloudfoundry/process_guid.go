@@ -45,15 +45,12 @@ func (pg ProcessGuid) String() string {
 	return pg.AppGuid.String() + "-" + pg.AppVersion.String()
 }
 
-func trimPadding(s string) string {
-	return strings.TrimRight(s, "=")
-}
-
 func DecodeProcessGuid(shortenedGuid string) (ProcessGuid, error) {
 	splited := strings.Split(strings.ToUpper(shortenedGuid), "-")
 	if len(splited) != 2 {
 		return ProcessGuid{}, errors.New("invalid-shortened-guid")
 	}
+
 	// add padding
 	appGuid := addPadding(splited[0])
 	appVersion := addPadding(splited[1])
@@ -86,4 +83,8 @@ func DecodeProcessGuid(shortenedGuid string) (ProcessGuid, error) {
 
 func addPadding(s string) string {
 	return s + strings.Repeat("=", 8-len(s)%8)
+}
+
+func trimPadding(s string) string {
+	return strings.TrimRight(s, "=")
 }
