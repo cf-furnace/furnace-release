@@ -106,3 +106,12 @@
 [submodule "src/github.com/cf-furnace/k8s-stager"]
 	path = src/github.com/cf-furnace/k8s-stager
 	url = https://github.com/cf-furnace/k8s-stager
+[submodule "src/github.com/cf-furnace/loggingAgent"]
+	path = src/github.com/cf-furnace/loggingAgent
+	url = https://github.com/cf-furnace/loggingAgent.git
+[submodule "src/github.com/fsnotify/fsnotify"]
+	path = src/github.com/fsnotify/fsnotify
+	url = https://github.com/fsnotify/fsnotify.git
+[submodule "src/golang.org/x/sys"]
+	path = src/golang.org/x/sys
+	url = https://go.googlesource.com/sys

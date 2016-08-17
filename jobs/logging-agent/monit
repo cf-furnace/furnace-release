@@ -1,0 +1,5 @@
+check process logging-agent
+  with pidfile /var/vcap/sys/run/logging-agent/logging-agent.pid
+  start program "/var/vcap/jobs/logging-agent/bin/logging-agent_ctl start"
+  stop program "/var/vcap/jobs/logging-agent/bin/logging-agent_ctl stop"
+  group vcap

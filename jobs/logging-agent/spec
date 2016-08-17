@@ -1,0 +1,18 @@
+---
+name: logging-agent
+
+packages:
+- utils
+- logging-agent
+
+templates:
+  logging-agent_ctl.erb: bin/logging-agent_ctl
+
+properties:
+  kube.logging_agent.logs_dir:
+    description: The directory containing the kubernetes pod logs
+    default: /var/log/containers
+
+  kube.logging_agent.dropsonde_port:
+      description: "local metron agent's port"
+      default: 3457

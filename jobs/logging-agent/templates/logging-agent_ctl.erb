@@ -1,0 +1,37 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run/logging-agent
+LOG_DIR=/var/vcap/sys/log/logging-agent
+PIDFILE=$RUN_DIR/logging-agent.pid
+
+source /var/vcap/packages/utils/pid_utils.sh
+
+case $1 in
+
+  start)
+    pid_guard $PIDFILE "logging-agent"
+
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
+
+    echo $$ > $PIDFILE
+
+    exec /var/vcap/packages/logging-agent/bin/loggingAgent \
+        -logsDir <%= p("kube.logging_agent.logs_dir") %> \
+        -dropsondePort <%= p("kube.logging_agent.dropsonde_port") %> \
+        2> >(tee -a $LOG_DIR/logging-agent.stderr.log | logger -p user.info -t vcap.logging-agent) \
+        1> >(tee -a $LOG_DIR/logging-agent.stdout.log | logger -p user.error -t vcap.logging-agent)
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+    ;;
+
+  *)
+    echo "Usage: logging-agent_ctl {start|stop}"
+    ;;
+
+esac

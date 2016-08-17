@@ -25,7 +25,6 @@ files:
   - github.com/cloudfoundry-incubator/nsync/cmd/nsync-bulker/*.go # gosub
   - github.com/cloudfoundry-incubator/nsync/cmd/nsync-listener/*.go # gosub
   - github.com/cloudfoundry-incubator/nsync/handlers/*.go # gosub
-  - github.com/cloudfoundry-incubator/nsync/handlers/transformer/*.go # gosub
   - github.com/cloudfoundry-incubator/nsync/helpers/*.go # gosub
   - github.com/cloudfoundry-incubator/nsync/recipebuilder/*.go # gosub
   - github.com/cloudfoundry-incubator/routing-info/cfroutes/*.go # gosub

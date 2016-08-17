@@ -7,3 +7,9 @@ bosh release for the furnace work
 ```
   config.vm.provision "shell", inline: "modprobe br-netfilter"
 ```
+
+## Diego deployment
+- Generate diego manifest
+```
+./scripts/generate-diego-bosh-lite-dev-manifest
+```

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -eu
+
+workspace_dir=$(cd $(dirname $0)/../.. && pwd)
+
+${workspace_dir}/diego-release/scripts/generate-deployment-manifest \
+      -c ${workspace_dir}/cf-release/bosh-lite/deployments/cf.yml \
+      -i ${workspace_dir}/diego-release/manifest-generation/bosh-lite-stubs/iaas-settings.yml \
+      -p ${workspace_dir}/diego-release/manifest-generation/bosh-lite-stubs/property-overrides.yml \
+      -n ${workspace_dir}/furnace-release/manifest-generation/instance-count-overrides.yml \
+      -v ${workspace_dir}/furnace-release/manifest-generation/release-versions.yml \
+      > ${workspace_dir}/diego-release/bosh-lite/deployments/diego.yml
+
+spiff merge \
+      ${workspace_dir}/furnace-release/manifest-generation/diego-furnace.yml \
+      ${workspace_dir}/diego-release/bosh-lite/deployments/diego.yml \
+      ${workspace_dir}/furnace-release/manifest-generation/release-versions.yml \
+      ${workspace_dir}/furnace-release/manifest-generation/config-from-kube.yml \
+      ${workspace_dir}/furnace-release/manifest-generation/nsync-properties.yml \
+      ${workspace_dir}/kubernetes-release/manifest-generation/bosh-lite/properties.yml \
+      > ${workspace_dir}/furnace-release/manifests/diego-bosh-lite.yml
