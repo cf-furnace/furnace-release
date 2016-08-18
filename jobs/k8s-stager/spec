@@ -23,6 +23,10 @@ properties:
   capi.nsync.kube.client_key:
     description: "PEM-encoded client key"
 
+  furnace.stager.consul_agent_port:
+    description: "local consul agent's port"
+    default: 8500
+
   furnace.stager.advertise-address:
     description: "Address of stager, as used by other components."
     default: k8s-stager.service.cf.internal
