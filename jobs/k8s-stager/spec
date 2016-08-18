@@ -3,7 +3,6 @@ name: k8s-stager
 
 templates:
   stager_ctl.erb: bin/stager_ctl
-  dns_health_check.erb: bin/dns_health_check
   kube_ca.crt.erb: config/certs/kube/ca-cert.pem
   kube_client.crt.erb: config/certs/kube/client-cert.pem
   kube_client.key.erb: config/certs/kube/client-key.pem

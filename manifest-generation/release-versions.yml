@@ -24,7 +24,7 @@ base_job_templates:
       release: diego
     - name: ssh_proxy
       release: diego
-    - name: stager
-      release: cf
+    - name: k8s-stager
+      release: furnace
     - name: tps
       release: cf
