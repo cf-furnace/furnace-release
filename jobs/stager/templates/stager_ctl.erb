@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
-RUN_DIR=/var/vcap/sys/run/k8s-stager
-LOG_DIR=/var/vcap/sys/log/k8s-stager
-CONF_DIR=/var/vcap/jobs/k8s-stager/config
+RUN_DIR=/var/vcap/sys/run/stager
+LOG_DIR=/var/vcap/sys/log/stager
+CONF_DIR=/var/vcap/jobs/stager/config
 
 PIDFILE=$RUN_DIR/stager.pid
 
@@ -46,7 +46,7 @@ case $1 in
     --cc-baseurl <%= p('furnace.stager.cc_baseurl') %> \
     --cc-username <%= p('furnace.stager.cc_username') %> \
     --cc-password <%= p('furnace.stager.cc_password') %> \
-    --consul-address http://127.0.0.1:<%= p('furnace.stager.consul_agent_port') %> \
+    --consul-cluster http://127.0.0.1:<%= p('furnace.stager.consul_agent_port') %> \
       2> >(tee -a $LOG_DIR/stager.stderr.log | logger -p user.error -t vcap.nsync-listener) \
       1> >(tee -a $LOG_DIR/stager.stdout.log | logger -p user.info -t vcap.nsync-listener)
 

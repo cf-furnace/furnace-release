@@ -8,3 +8,6 @@ properties:
     nsync:
       <<: (( merge ))
       kube: (( config_from_kube.nsync ))
+  furnace:
+    <<: (( merge ))
+    

@@ -5,4 +5,4 @@ dependencies:
 - golang
 
 files:
-  - github.com/cf-furnace/k8s-stager/**/*.go
+  - github.com/cf-furnace/k8s-stager/**/*
