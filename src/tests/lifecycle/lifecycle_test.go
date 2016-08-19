@@ -28,7 +28,6 @@ var _ = Describe("Lifecycle", func() {
 	BeforeEach(func() {
 		appName = generator.PrefixedRandomName("KUBE-APP-")
 
-		var err error
 		clientSet, err := clientset.NewForConfig(kubeConfig.ClientConfig())
 		Expect(err).NotTo(HaveOccurred())
 
