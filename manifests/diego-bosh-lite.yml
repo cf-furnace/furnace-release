@@ -464,7 +464,7 @@ jobs:
   - name: cflinuxfs2-rootfs-setup
     release: cflinuxfs2-rootfs
   - name: route_emitter
-    release: diego
+    release: furnace
   - name: ssh_proxy
     release: diego
   - name: stager
@@ -516,7 +516,7 @@ jobs:
   - name: cflinuxfs2-rootfs-setup
     release: cflinuxfs2-rootfs
   - name: route_emitter
-    release: diego
+    release: furnace
   - name: ssh_proxy
     release: diego
   - name: stager
@@ -568,7 +568,7 @@ jobs:
   - name: cflinuxfs2-rootfs-setup
     release: cflinuxfs2-rootfs
   - name: route_emitter
-    release: diego
+    release: furnace
   - name: ssh_proxy
     release: diego
   - name: stager

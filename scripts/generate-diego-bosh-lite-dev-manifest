@@ -2,8 +2,7 @@
 
 set -eu
 
-# workspace_dir=$(cd $(dirname $0)/../.. && pwd)
-workspace_dir=/Users/linsun/workspace/cf-furnace
+workspace_dir=$(cd $(dirname $0)/../.. && pwd)
 
 ${workspace_dir}/diego-release/scripts/generate-deployment-manifest \
       -c ${workspace_dir}/cf-release/bosh-lite/deployments/cf.yml \
@@ -19,6 +18,7 @@ spiff merge \
       ${workspace_dir}/furnace-release/manifest-generation/release-versions.yml \
       ${workspace_dir}/furnace-release/manifest-generation/config-from-kube.yml \
       ${workspace_dir}/furnace-release/manifest-generation/nsync-properties.yml \
+      ${workspace_dir}/furnace-release/manifest-generation/route_emitter-properties.yml \
       ${workspace_dir}/furnace-release/manifest-generation/stager-properties.yml \
       ${workspace_dir}/furnace-release/manifest-generation/tps-properties.yml \
       ${workspace_dir}/kubernetes-release/manifest-generation/bosh-lite/properties.yml \

@@ -124,3 +124,18 @@
 [submodule "src/github.com/gorilla/websocket"]
 	path = src/github.com/gorilla/websocket
 	url = https://github.com/gorilla/websocket.git
+[submodule "src/code.cloudfoundry.org/locket"]
+	path = src/code.cloudfoundry.org/locket
+	url = https://github.com/cloudfoundry/locket
+[submodule "src/code.cloudfoundry.org/debugserver"]
+	path = src/code.cloudfoundry.org/debugserver
+	url = https://github.com/cloudfoundry/debugserver
+[submodule "src/code.cloudfoundry.org/consuladapter"]
+	path = src/code.cloudfoundry.org/consuladapter
+	url = https://github.com/cloudfoundry/consuladapter
+[submodule "src/code.cloudfoundry.org/cfhttp"]
+	path = src/code.cloudfoundry.org/cfhttp
+	url = https://github.com/cloudfoundry/cfhttp
+[submodule "src/code.cloudfoundry.org/runtimeschema"]
+	path = src/code.cloudfoundry.org/runtimeschema
+	url = https://github.com/cloudfoundry/runtimeschema

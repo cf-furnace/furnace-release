@@ -1,0 +1,48 @@
+---
+name: route_emitter
+
+templates:
+  route_emitter_ctl.erb: bin/route_emitter_ctl
+  route_emitter_as_vcap.erb: bin/route_emitter_as_vcap
+  kube_ca.crt.erb: config/certs/kube/ca-cert.pem
+  kube_client.crt.erb: config/certs/kube/client-cert.pem
+  kube_client.key.erb: config/certs/kube/client-key.pem
+
+packages:
+  - route_emitter
+  - utils
+
+properties:
+  kube.cluster.url:
+    description: "kubernetes cluster API URL"
+    default: https://kube-apiserver.service.cf.internal:6443
+  capi.nsync.kube.ca_cert:
+    description: "PEM-encoded CA certificate"
+  capi.nsync.kube.client_cert:
+    description: "PEM-encoded client certificate"
+  capi.nsync.kube.client_key:
+    description: "PEM-encoded client key"
+
+  diego.route_emitter.nats.user:
+    description: "Username for server authentication."
+  diego.route_emitter.nats.password:
+    description: "Password for server authentication."
+  diego.route_emitter.nats.port:
+    description: "The port for the NATS server to listen on."
+    default: 4222
+  diego.route_emitter.nats.machines:
+    description: "IP of each NATS cluster member."
+
+  diego.route_emitter.debug_addr:
+    description: "address at which to serve debug info"
+    default: "127.0.0.1:17009"
+  diego.route_emitter.sync_interval_in_seconds:
+    description: "Interval to sync routes to the router in seconds."
+    default: 60
+  diego.route_emitter.log_level:
+    description: "Log level"
+    default: "info"
+  diego.route_emitter.dropsonde_port:
+    description: "local metron agent's port"
+    default: 3457
+
