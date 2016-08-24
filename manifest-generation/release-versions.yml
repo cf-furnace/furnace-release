@@ -25,6 +25,6 @@ base_job_templates:
     - name: ssh_proxy
       release: diego
     - name: stager
-      release: furnace
-    - name: tps
       release: cf
+    - name: tps
+      release: furnace

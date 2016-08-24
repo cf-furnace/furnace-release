@@ -1,8 +1,11 @@
 ---
 config_from_kube:
   nsync: (( properties.capi.nsync.kube ))
+  tps: (( properties.capi.tps.kube ))
 
 properties:
   capi:
     nsync:
+      kube: (( merge ))
+    tps:
       kube: (( merge ))

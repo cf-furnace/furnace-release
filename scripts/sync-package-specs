@@ -40,6 +40,7 @@ function sync_package() {
 }
 
 sync_package nsync -app github.com/cloudfoundry-incubator/nsync/cmd/... &
+sync_package tps -app github.com/cloudfoundry-incubator/tps/cmd/... &
 sync_package logging-agent -app github.com/cf-furnace/loggingAgent/cmd/... &
 
 wait

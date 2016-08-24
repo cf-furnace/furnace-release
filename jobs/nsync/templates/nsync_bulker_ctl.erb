@@ -8,21 +8,6 @@ PIDFILE=$RUN_DIR/nsync_bulker.pid
 
 source /var/vcap/packages/utils/pid_utils.sh
 
-<% require "shellwords" %>
-
-<% if p("capi.nsync.bbs.require_ssl") %>
-  bbs_sec_flags=" \
-   -bbsClientCert=${CONF_DIR}/certs/bbs/client.crt \
-   -bbsClientKey=${CONF_DIR}/certs/bbs/client.key \
-   -bbsCACert=${CONF_DIR}/certs/bbs/ca.crt"
-
-  bbs_api_url="<%= "https://" + p("capi.nsync.bbs.api_location") %>"
-<% else %>
-  bbs_sec_flags=""
-  bbs_api_url="<%= "http://" + p("capi.nsync.bbs.api_location") %>"
-<% end %>
-
-
 case $1 in
 
   start)
@@ -42,14 +27,7 @@ case $1 in
     # Work around for GOLANG 1.5.3 DNS bug
     export GODEBUG=netdns=cgo
 
-    exec chpst -u vcap:vcap /var/vcap/packages/nsync/bin/nsync-bulker ${bbs_sec_flags} \
-      -bbsAddress=${bbs_api_url} \
-      <% if_p("capi.nsync.bbs.client_session_cache_size") do |value| %> \
-        -bbsClientSessionCacheSize=<%= value %> \
-      <% end %> \
-      <% if_p("capi.nsync.bbs.max_idle_conns_per_host") do |value| %> \
-        -bbsMaxIdleConnsPerHost=<%= value %> \
-      <% end %> \
+    exec chpst -u vcap:vcap /var/vcap/packages/nsync/bin/nsync-bulker \
       -dropsondePort=<%= p("capi.nsync.dropsonde_port") %> \
       -privilegedContainers=<%= p("capi.nsync.diego_privileged_containers") %> \
       -consulCluster=http://127.0.0.1:<%= p("capi.nsync.consul_agent_port") %> \

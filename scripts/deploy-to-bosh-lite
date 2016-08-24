@@ -101,6 +101,7 @@ generate_manifests() {
       ${workspace_dir}/furnace-release/manifest-generation/config-from-kube.yml \
       ${workspace_dir}/furnace-release/manifest-generation/nsync-properties.yml \
       ${workspace_dir}/furnace-release/manifest-generation/stager-properties.yml \
+      ${workspace_dir}/furnace-release/manifest-generation/tps-properties.yml \
       ${workspace_dir}/kubernetes-release/manifest-generation/bosh-lite/properties.yml \
       > ${workspace_dir}/furnace-release/manifests/diego-bosh-lite.yml
 }

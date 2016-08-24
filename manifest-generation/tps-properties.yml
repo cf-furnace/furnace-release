@@ -1,0 +1,61 @@
+---
+properties:
+  capi:
+    tps:
+      kube:
+        ca_cert: (( properties.kube.cluster.ca_cert ))
+        client_cert: |+
+          -----BEGIN CERTIFICATE-----
+          MIIEIzCCAgugAwIBAgIQA0JZe550hLN2LPNIPBFapjANBgkqhkiG9w0BAQsFADAY
+          MRYwFAYDVQQDEw1LdWJlcm5ldGVzIENBMB4XDTE2MDgwOTE5Mjk1MFoXDTE4MDgw
+          OTE5Mjk1MFowEDEOMAwGA1UEAxMFbnN5bmMwggEiMA0GCSqGSIb3DQEBAQUAA4IB
+          DwAwggEKAoIBAQCnWjDq1MP1AWa+OISE+4Gx4xbN31cfZ0aSKkgySViW/5VP+Tpw
+          YxErBOgH4al3039jk4z0DU7V5kkG5tQjhUO85zINXAytSHRjiThh6kqEQZtKHQJH
+          BBDqOyCO1wHL+fMn73rpzyohnsjcORHUbmzAZml1s56b9r0lIJn0cIk8ByQ4+5yK
+          Fad7RGIXlWeOdroowC4C7jQxftKbrouFOTrXh42bjayJoA752tNcrjXYTHAgCYeC
+          qHD9CCkb/CPTWZcm7oMkv0sQWrfqOywzCoToEb/mV2h/8jdlD5p3IM4WQ74b1zGQ
+          VRybsYyT/180eRqEKNI/+cY5KH/6wKmM2OxbAgMBAAGjcTBvMA4GA1UdDwEB/wQE
+          AwIDuDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwHQYDVR0OBBYEFEhP
+          kd0eobevgOqB3Y6u9cVcHA6/MB8GA1UdIwQYMBaAFD6kQNGfwRD+LjFCGqPQKmi9
+          q2+GMA0GCSqGSIb3DQEBCwUAA4ICAQA+rYzAExGhUOcNTFd5Gnvzwm3AHZKq630F
+          YHrsSUCHaGlMLGWuev0n3jbXktXDfe3uUcXbDPFFljoYu0RQSwWoeUhh3JrHpAiq
+          Vb8uJh5WyDIaPYavllaRmSQIrzYfzxToU0Xe7+fNHFkPmFR3imOf/m3LwmYezt4q
+          RXH23BILpME6aPwqy/HN95cVf8IKaZC90nJZSvI/pHqs4VPoPXjFhcf97qsqVjIj
+          oe7yv0/oeGcJ7se4zTbGzdSjNxU9PckNfLqN6Uvwh1LRA1tgrRiEhU4JkHF8QcBM
+          R8PvsWAdwiRpib7uRxwu+jkSQFuyvsLokS9edgeE+fxlFanmceeP9/uilTUZRGPp
+          CXnkJj4mirfz9ZDYVU1dJrUv//9vFzmSaeTK/BegAJDATNAEpGwWQiOry+XvzTgJ
+          JxnBNWC1fRzJ8bxbhbrvAjTZXrJJj6TudqvriAsPa4k4yST41fJ2SUyOWUZCPdAI
+          UEDp1+rcbwYeMwzLkKPL9jamKlmlJOSrxL0JZmUZZ6JFcY2OMpSRCNaqk0hYGPTg
+          BHcFV6ZFcAA82sCxvlWTlCT60YVhtU3FrPfhmMRT2RrykuzrF/DaYdJrvgUd3xFC
+          kkyOBSTYGwt18ZCmQPkesHnwm15qjNOMcoqDzD0eapJvXMg80M+yYgyuwc3/QAof
+          uwABszvrZg==
+          -----END CERTIFICATE-----
+        client_key: |+
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEpAIBAAKCAQEAp1ow6tTD9QFmvjiEhPuBseMWzd9XH2dGkipIMklYlv+VT/k6
+          cGMRKwToB+Gpd9N/Y5OM9A1O1eZJBubUI4VDvOcyDVwMrUh0Y4k4YepKhEGbSh0C
+          RwQQ6jsgjtcBy/nzJ+966c8qIZ7I3DkR1G5swGZpdbOem/a9JSCZ9HCJPAckOPuc
+          ihWne0RiF5Vnjna6KMAuAu40MX7Sm66LhTk614eNm42siaAO+drTXK412ExwIAmH
+          gqhw/QgpG/wj01mXJu6DJL9LEFq36jssMwqE6BG/5ldof/I3ZQ+adyDOFkO+G9cx
+          kFUcm7GMk/9fNHkahCjSP/nGOSh/+sCpjNjsWwIDAQABAoIBADh+BqNO/XM4bOFr
+          nLhzWj2dZfZLHVLZfwYaRdLL1Z7rWhDsFeEYYBRAjL8UWyu69na7uUotL96e5Sny
+          Q8xV0R70gH3oA9N+8OMk0Cale1AYAX7MOheU9MzM9tmhFNcxYfaqLbi9mQBOZImK
+          rk0ilY2BRLpZzwHhEcp1reLJFlpvlrgIVfqkyheybrFXqduf9W+J/fbr8Gmnw14Q
+          KeNzMNYuA/Y0R8K5VvRm21zsGjj1k/+qZgKR4J2ibHEHgHCA8IFvJWX9zM2HfQI6
+          b1FIeEunKqP5m6tIgcdB9fZ/pTC4j3hoik69F/0Z+uQ8IsXY3PytKJsWjhszYfMA
+          88/PABECgYEA2+PTkwPHH9DlZ5QZo5P7Lc87EwOkBH/6S4Blm0YMoCJuAxjCMVHp
+          SiOa3s5Hqw/0joQ6ZIA7QyIoJoLZIxj9Td2D+Hnd4T/vU7Xuy5d6LQJtiSIRPTtI
+          qeVq6X3ekmlJkBfElpMylL5xbecR9oj/cIEcl2tzxcDmsC7rqPQGpdMCgYEAwtWu
+          qW8J76eKnF5/DLEEJqzdn3WHu20OwzwnZIvnsRUuWGQ4PmuH3G89s5hwewJ7TXoV
+          rm/WgJYjjZeBeubNib+LNd5lMaFAAMWw87XAw5rNWQpTewV6ngmIyhodfyVWSbr8
+          ZB/SdTtLNJ/c1pDvHlL1xBQwW5CTN3Zab/cn4lkCgYAdq4kh3jGhJmO97SrkepQ6
+          4yp6b1RTUx1n0KRlJjeP5/VmL5IMa5wJ5/H+vGDJQTbjgA4M/4x/i31VbPR1muqa
+          9hfXkEITIbheWD8nc4IFzr0O8uzWkUhFvHIHnXdJ1DEb40kgdC4wCd5uUO6IkIW/
+          HXzJJbOSbGv0O/CKdJrtBwKBgQC/enGlYtNJDEdVVilWt8F0oP9N75vtv0h652tv
+          jW+uwTpC9HuyHMvxAAKLto0U12OGySz1ukP9K5DVXsiJmLr3XZ/a2S5qkCbum1tE
+          qKNBmammkFdq1/+hwY0F0pSamH8tBu91FzEmtZc7qMDIvrfB/ZY7lfvQgU2tfEt1
+          LlmsQQKBgQCfZZWHz0NPnezAo+2SFlDs1d+zKUrxih2u3KoIrDH9MeiK6JFSeoP+
+          ljGnY7lmdzj//ybnprjgEkdBMznNLYkL+cl4v8u8tpxor5dAUOfUL3k7mda0qYKA
+          WeCXnNfrBMC7ce/1YP8aqvhpQcTfiiyqRK54ByNZh4X8YJ0Ao+7JbA==
+          -----END RSA PRIVATE KEY-----
+  kube: (( merge ))

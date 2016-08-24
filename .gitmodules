@@ -115,3 +115,12 @@
 [submodule "src/golang.org/x/sys"]
 	path = src/golang.org/x/sys
 	url = https://go.googlesource.com/sys
+[submodule "src/github.com/cloudfoundry-incubator/tps"]
+	path = src/github.com/cloudfoundry-incubator/tps
+	url = https://github.com/cf-furnace/tps.git
+[submodule "src/github.com/cloudfoundry/noaa"]
+	path = src/github.com/cloudfoundry/noaa
+	url = https://github.com/cloudfoundry/noaa.git
+[submodule "src/github.com/gorilla/websocket"]
+	path = src/github.com/gorilla/websocket
+	url = https://github.com/gorilla/websocket.git

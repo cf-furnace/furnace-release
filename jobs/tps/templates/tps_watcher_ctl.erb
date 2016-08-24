@@ -1,0 +1,81 @@
+#!/bin/bash -e
+
+RUN_DIR=/var/vcap/sys/run/tps
+LOG_DIR=/var/vcap/sys/log/tps
+DATA_DIR=/var/vcap/data/tps
+CONF_DIR=/var/vcap/jobs/tps/config
+
+PIDFILE=$RUN_DIR/tps_watcher.pid
+
+source /var/vcap/packages/utils/pid_utils.sh
+
+<% if p("capi.tps.bbs.require_ssl") %>
+  bbs_sec_flags=" \
+   -bbsClientCert=${CONF_DIR}/certs/bbs/client.crt \
+   -bbsClientKey=${CONF_DIR}/certs/bbs/client.key \
+   -bbsCACert=${CONF_DIR}/certs/bbs/ca.crt"
+
+  bbs_api_url="<%= "https://" + p("capi.tps.bbs.api_location") %>"
+<% else %>
+  bbs_sec_flags=""
+  bbs_api_url="<%= "http://" + p("capi.tps.bbs.api_location") %>"
+<% end %>
+
+case $1 in
+
+  start)
+    pid_guard $PIDFILE "tps_watcher"
+
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
+
+    mkdir -p $DATA_DIR
+    chown -R vcap:vcap $DATA_DIR
+
+
+    depot=$DATA_DIR/depot
+    mkdir -p $DATA_DIR/depot
+
+    echo $$ > $PIDFILE
+
+    # Enable maximum OS thread concurrency
+    export GOMAXPROCS=$(nproc)
+
+    # Work around for GOLANG 1.5.3 DNS bug
+    export GODEBUG=netdns=cgo
+
+    exec chpst -u vcap:vcap /var/vcap/packages/tps/bin/tps-watcher ${bbs_sec_flags} \
+      -bbsAddress=${bbs_api_url} \
+      <% if_p("capi.tps.bbs.client_session_cache_size") do |value| %> \
+        -bbsClientSessionCacheSize=<%= value %> \
+      <% end %> \
+      <% if_p("capi.tps.bbs.max_idle_conns_per_host") do |value| %> \
+        -bbsMaxIdleConnsPerHost=<%= value %> \
+      <% end %> \
+      -dropsondePort=<%= p("capi.tps.dropsonde_port") %> \
+      -consulCluster=http://127.0.0.1:<%= p("capi.tps.consul_agent_port") %> \
+      -ccBaseURL=http://<%= p("capi.tps.cc.internal_service_hostname") %>:<%= p("capi.tps.cc.external_port") %> \
+      -ccUsername=<%= Shellwords.shellescape(p("capi.tps.cc.basic_auth_username")) %> \
+      -ccPassword=<%= Shellwords.shellescape(p("capi.tps.cc.basic_auth_password")) %> \
+      -skipCertVerify=<%= p("diego.ssl.skip_cert_verify") %> \
+      -debugAddr=<%= p("capi.tps.watcher.debug_addr") %> \
+      -logLevel=<%= p("capi.tps.log_level") %> \
+      2> >(tee -a $LOG_DIR/tps_watcher.stderr.log | logger -p user.error -t vcap.tps-watcher) \
+      1> >(tee -a $LOG_DIR/tps_watcher.stdout.log | logger -p user.info -t vcap.tps-watcher)
+
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+
+    ;;
+
+esac
