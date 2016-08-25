@@ -42,6 +42,10 @@ case $1 in
       <%= p("capi.nsync.lifecycle_bundles").map { |bundle| "-lifecycle #{bundle}" }.join(" ") %> \
       -fileServerURL=<%= p("capi.nsync.file_server_url") %> \
       -logLevel=<%= p("capi.nsync.log_level") %> \
+      -kubeCluster=<%= p("kube.cluster.url") %> \
+      -kubeCACert=${CONF_DIR}/certs/kube/ca-cert.pem \
+      -kubeClientCert=${CONF_DIR}/certs/kube/client-cert.pem \
+      -kubeClientKey=${CONF_DIR}/certs/kube/client-key.pem  \
       2> >(tee -a $LOG_DIR/nsync_bulker.stderr.log | logger -p user.error -t vcap.nsync-bulker) \
       1> >(tee -a $LOG_DIR/nsync_bulker.stdout.log | logger -p user.info -t vcap.nsync-bulker)
 
