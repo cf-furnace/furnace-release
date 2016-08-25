@@ -468,7 +468,7 @@ jobs:
   - name: ssh_proxy
     release: diego
   - name: stager
-    release: cf
+    release: furnace
   - name: tps
     release: furnace
   - name: consul_agent
@@ -520,7 +520,7 @@ jobs:
   - name: ssh_proxy
     release: diego
   - name: stager
-    release: cf
+    release: furnace
   - name: tps
     release: furnace
   - name: consul_agent
@@ -572,7 +572,7 @@ jobs:
   - name: ssh_proxy
     release: diego
   - name: stager
-    release: cf
+    release: furnace
   - name: tps
     release: furnace
   - name: consul_agent
@@ -3339,4 +3339,3 @@ update:
   max_in_flight: 1
   serial: false
   update_watch_time: 5000-120000
-
