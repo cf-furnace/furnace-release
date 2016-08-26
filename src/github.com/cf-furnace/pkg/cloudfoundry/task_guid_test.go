@@ -2,6 +2,7 @@ package cloudfoundry_test
 
 import (
 	"encoding/base32"
+	"encoding/hex"
 	"fmt"
 
 	"k8s.io/kubernetes/pkg/util/validation"
@@ -11,36 +12,35 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("ProcessGuid", func() {
-	var processGuid cloudfoundry.ProcessGuid
-	var appGuid, appVersion string
+var _ = Describe("TaskGuid", func() {
+	var taskGuid cloudfoundry.TaskGuid
+	var appGuid, taskId string
 
 	BeforeEach(func() {
-		appGuid = "8d58c09b-b305-4f16-bcfe-b78edcb77100"
-		appVersion = "3f258eb0-9dac-460c-a424-b43fe92bee27"
+		appGuid = "7fe5f9a4-8b38-4f54-931b-df91723c94d7"
+		taskId = "dc68c40dce3f468d8ea2398f785efe39"
 	})
-
-	Describe("NewProcessGuid", func() {
+	Describe("NewTaskGuid", func() {
 		var err error
 
 		JustBeforeEach(func() {
-			processGuid, err = cloudfoundry.NewProcessGuid(fmt.Sprintf("%s-%s", appGuid, appVersion))
+			taskGuid, err = cloudfoundry.NewTaskGuid(fmt.Sprintf("%s-%s", appGuid, taskId))
 		})
 
 		It("breaks the guid apart", func() {
 			Expect(err).NotTo(HaveOccurred())
-			Expect(processGuid.AppGuid.String()).To(Equal(appGuid))
-			Expect(processGuid.AppVersion.String()).To(Equal(appVersion))
+			Expect(taskGuid.AppGuid.String()).To(Equal(appGuid))
+			Expect(hex.EncodeToString(taskGuid.TaskId)).To(Equal(taskId))
 		})
 
 		Context("when the source guid is too short", func() {
 			BeforeEach(func() {
 				appGuid = "guid"
-				appVersion = "version"
+				taskId = "version"
 			})
 
 			It("returns an error", func() {
-				Expect(err).To(MatchError("invalid process guid"))
+				Expect(err).To(MatchError("invalid task guid"))
 			})
 		})
 
@@ -53,62 +53,52 @@ var _ = Describe("ProcessGuid", func() {
 				Expect(err).To(MatchError("Invalid UUID string"))
 			})
 		})
-
-		Context("when the source app version is invalid", func() {
-			BeforeEach(func() {
-				appVersion = "this-is-an-invalid-app-version-with-"
-			})
-
-			It("returns an error", func() {
-				Expect(err).To(MatchError("Invalid UUID string"))
-			})
-		})
 	})
 
 	Describe("ShortenedGuid", func() {
 		BeforeEach(func() {
-			pg, err := cloudfoundry.NewProcessGuid(fmt.Sprintf("%s-%s", appGuid, appVersion))
+			pg, err := cloudfoundry.NewTaskGuid(fmt.Sprintf("%s-%s", appGuid, taskId))
 			Expect(err).NotTo(HaveOccurred())
-			processGuid = pg
+			taskGuid = pg
 		})
 
-		It("returns an encoded version of the process guid", func() {
-			Expect(processGuid.ShortenedGuid()).To(Equal("rvmmbg5tavhrnph6w6hnzn3raa-h4sy5me5vrdazjbewq76sk7oe4"))
+		It("returns an encoded version of the task guid", func() {
+			Expect(taskGuid.ShortenedGuid()).To(Equal("p7s7tjelhbhvjey336ixepeu24-3rumidooh5di3dvchghxqxx6he"))
 		})
 
 		It("is a valid kubernetes dns label", func() {
-			Expect(validation.IsDNS1123Label(processGuid.ShortenedGuid())).To(BeEmpty())
+			Expect(validation.IsDNS1123Label(taskGuid.ShortenedGuid())).To(BeEmpty())
 		})
 	})
 
 	Describe("String", func() {
 		BeforeEach(func() {
-			pg, err := cloudfoundry.NewProcessGuid(fmt.Sprintf("%s-%s", appGuid, appVersion))
+			pg, err := cloudfoundry.NewTaskGuid(fmt.Sprintf("%s-%s", appGuid, taskId))
 			Expect(err).NotTo(HaveOccurred())
-			processGuid = pg
+			taskGuid = pg
 		})
 
-		It("returns the normal representation of a process guid", func() {
-			Expect(processGuid.String()).To(Equal(appGuid + "-" + appVersion))
+		It("returns the normal representation of a task guid", func() {
+			Expect(taskGuid.String()).To(Equal(appGuid + "-" + taskId))
 		})
 	})
 
-	Describe("DecodeProcessGuid", func() {
-		var expectedGuid cloudfoundry.ProcessGuid
+	Describe("DecodeTaskGuid", func() {
+		var expectedGuid cloudfoundry.TaskGuid
 		var actualShortenedGuid string
-		var actualGuid cloudfoundry.ProcessGuid
+		var actualGuid cloudfoundry.TaskGuid
 		var actualErr error
 
 		BeforeEach(func() {
 			var err error
-			expectedGuid, err = cloudfoundry.NewProcessGuid(fmt.Sprintf("%s-%s", appGuid, appVersion))
+			expectedGuid, err = cloudfoundry.NewTaskGuid(fmt.Sprintf("%s-%s", appGuid, taskId))
 			Expect(err).NotTo(HaveOccurred())
 
-			actualShortenedGuid = "rvmmbg5tavhrnph6w6hnzn3raa-h4sy5me5vrdazjbewq76sk7oe4"
+			actualShortenedGuid = "p7s7tjelhbhvjey336ixepeu24-3rumidooh5di3dvchghxqxx6he"
 		})
 
 		JustBeforeEach(func() {
-			actualGuid, actualErr = cloudfoundry.DecodeProcessGuid(actualShortenedGuid)
+			actualGuid, actualErr = cloudfoundry.DecodeTaskGuid(actualShortenedGuid)
 		})
 
 		It("decodes a shortened GUID", func() {
@@ -148,21 +138,11 @@ var _ = Describe("ProcessGuid", func() {
 
 		Context("with non-base32 task id", func() {
 			BeforeEach(func() {
-				actualShortenedGuid = "rvmmbg5tavhrnph6w6hnzn3raa-can"
+				actualShortenedGuid = "h4sy5me5vrdazjbewq76sk7oe4-can"
 			})
 
 			It("returns an error", func() {
 				Expect(actualErr).To(BeAssignableToTypeOf(base32.CorruptInputError(0)))
-			})
-		})
-
-		Context("with base32 task non-guid", func() {
-			BeforeEach(func() {
-				actualShortenedGuid = "rvmmbg5tavhrnph6w6hnzn3raa-mfrgg"
-			})
-
-			It("returns an error", func() {
-				Expect(actualErr.Error()).To(MatchRegexp(".* not valid UUID sequence"))
 			})
 		})
 	})

@@ -11,13 +11,7 @@ files:
   - github.com/cf-furnace/loggingAgent/proxy/*.go # gosub
   - github.com/cf-furnace/loggingAgent/retriever/*.go # gosub
   - github.com/cf-furnace/loggingAgent/watcher/*.go # gosub
-  - github.com/cloudfoundry-incubator/bbs/encryption/*.go # gosub
-  - github.com/cloudfoundry-incubator/bbs/format/*.go # gosub
-  - github.com/cloudfoundry-incubator/bbs/models/*.go # gosub
-  - github.com/cloudfoundry-incubator/nsync/helpers/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-info/cfroutes/*.go # gosub
-  - github.com/cloudfoundry-incubator/routing-info/tcp_routes/*.go # gosub
-  - github.com/cloudfoundry-incubator/runtime-schema/cc_messages/*.go # gosub
+  - github.com/cf-furnace/pkg/cloudfoundry/*.go # gosub
   - github.com/cloudfoundry/dropsonde/*.go # gosub
   - github.com/cloudfoundry/dropsonde/emitter/*.go # gosub
   - github.com/cloudfoundry/dropsonde/envelope_sender/*.go # gosub
@@ -38,8 +32,6 @@ files:
   - github.com/gogo/protobuf/gogoproto/*.go # gosub
   - github.com/gogo/protobuf/proto/*.go # gosub
   - github.com/gogo/protobuf/protoc-gen-gogo/descriptor/*.go # gosub
-  - github.com/gogo/protobuf/sortkeys/*.go # gosub
   - github.com/nu7hatch/gouuid/*.go # gosub
-  - github.com/pivotal-golang/lager/*.go # gosub
   - golang.org/x/sys/unix/*.go # gosub
   - golang.org/x/sys/unix/*.s # gosub
