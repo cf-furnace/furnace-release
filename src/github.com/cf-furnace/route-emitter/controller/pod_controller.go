@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"encoding/json"
 	"time"
+
+	"code.cloudfoundry.org/lager"
 
 	"github.com/cf-furnace/route-emitter/models"
 
@@ -15,9 +18,12 @@ import (
 	"k8s.io/kubernetes/pkg/watch"
 )
 
-const ROUTING_ENDPOINTS_LABEL = "cloudfoundry.org/routing-endpoints"
+const (
+	NODE_PORTS_ANNOTATION = "cloudfoundry.org/node-ports"
+)
 
 type PodRouteController struct {
+	logger     lager.Logger
 	kubeClient v1core.CoreInterface
 	events     chan<- models.Event
 
@@ -25,13 +31,14 @@ type PodRouteController struct {
 	controller *framework.Controller
 }
 
-func NewPodRouteController(coreClient v1core.CoreInterface, resyncPeriod time.Duration, events chan<- models.Event) *PodRouteController {
+func NewPodRouteController(logger lager.Logger, coreClient v1core.CoreInterface, resyncPeriod time.Duration, events chan<- models.Event) *PodRouteController {
 	prc := &PodRouteController{
+		logger:     logger.Session("pod-route-controller"),
 		kubeClient: coreClient,
 		events:     events,
 	}
 
-	pguidSelector, err := labels.Parse(ROUTING_ENDPOINTS_LABEL)
+	pguidSelector, err := labels.Parse(PROCESS_GUID_LABEL)
 	if err != nil {
 		return nil
 	}
@@ -51,7 +58,6 @@ func NewPodRouteController(coreClient v1core.CoreInterface, resyncPeriod time.Du
 		resyncPeriod,
 		prc,
 	)
-
 	return prc
 }
 
@@ -66,20 +72,20 @@ func (prc *PodRouteController) HasSynced() bool {
 
 func (prc *PodRouteController) OnAdd(obj interface{}) {
 	prc.events <- &models.ActualLRPCreatedEvent{
-		ActualLRP: asActualLRP(asPod(obj)),
+		ActualLRP: asActualLRP(prc.logger, asPod(obj)),
 	}
 }
 
 func (prc *PodRouteController) OnUpdate(old, new interface{}) {
 	prc.events <- &models.ActualLRPChangedEvent{
-		Before: asActualLRP(asPod(old)),
-		After:  asActualLRP(asPod(new)),
+		Before: asActualLRP(prc.logger, asPod(old)),
+		After:  asActualLRP(prc.logger, asPod(new)),
 	}
 }
 
 func (prc *PodRouteController) OnDelete(obj interface{}) {
 	prc.events <- &models.ActualLRPRemovedEvent{
-		ActualLRP: asActualLRP(asPod(obj)),
+		ActualLRP: asActualLRP(prc.logger, asPod(obj)),
 	}
 }
 
@@ -92,7 +98,7 @@ func asPod(obj interface{}) *v1.Pod {
 	return pod
 }
 
-func asActualLRP(p *v1.Pod) *models.ActualLRP {
+func asActualLRP(logger lager.Logger, p *v1.Pod) *models.ActualLRP {
 	if p == nil {
 		return nil
 	}
@@ -109,13 +115,25 @@ func asActualLRP(p *v1.Pod) *models.ActualLRP {
 	case v1.PodUnknown:
 	}
 
+	guid := p.Labels[PROCESS_GUID_LABEL]
+
+	portMapping := []models.PortMapping{}
+	ports := p.Annotations[NODE_PORTS_ANNOTATION]
+	if ports != "" {
+		err := json.Unmarshal([]byte(ports), &portMapping)
+		if err != nil {
+			logger.Error("node-ports-unmarshal-failed", err, lager.Data{"process-guid": guid})
+			return nil
+		}
+	}
+
 	return &models.ActualLRP{
-		ProcessGuid:  p.Labels[PROCESS_GUID_LABEL],
+		ProcessGuid:  guid,
 		InstanceGuid: string(p.UID),
 		Index:        0,
 
 		State:   state,
 		Address: p.Status.HostIP,
-		// Ports:
+		Ports:   portMapping,
 	}
 }

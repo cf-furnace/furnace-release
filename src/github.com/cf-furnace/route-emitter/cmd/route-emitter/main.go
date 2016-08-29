@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -142,7 +143,10 @@ func main() {
 
 	events := make(chan models.Event, 10)
 	podController := ifrit.RunFunc(func(signals <-chan os.Signal, ready chan<- struct{}) error {
-		prc := controller.NewPodRouteController(coreClient, *syncInterval, events)
+		prc := controller.NewPodRouteController(logger, coreClient, *syncInterval, events)
+		if prc == nil {
+			return errors.New("create-pod-route-controller-failed")
+		}
 		close(ready)
 		stop := make(chan struct{})
 		go prc.Run(stop)

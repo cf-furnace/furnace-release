@@ -3,6 +3,8 @@ package controller_test
 import (
 	"time"
 
+	"code.cloudfoundry.org/lager/lagertest"
+
 	"k8s.io/kubernetes/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/watch"
 
@@ -49,8 +51,9 @@ var _ = Describe("PodRouteController", func() {
 			},
 		}
 
+		logger := lagertest.NewTestLogger("")
 		events = make(chan models.Event, 10)
-		podController = controller.NewPodRouteController(coreClient, resyncPeriod, events)
+		podController = controller.NewPodRouteController(logger, coreClient, resyncPeriod, events)
 	})
 
 	Describe("Run", func() {

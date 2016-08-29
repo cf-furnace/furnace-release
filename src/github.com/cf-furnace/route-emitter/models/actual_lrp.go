@@ -8,8 +8,8 @@ const (
 )
 
 type PortMapping struct {
-	HostPort      uint32
-	ContainerPort uint32
+	HostPort      uint32 `json:"node_port"`
+	ContainerPort uint32 `json:"container_port"`
 }
 
 type ActualLRP struct {

@@ -139,9 +139,16 @@ func asDesiredLRP(logger lager.Logger, r *v1.ReplicationController) *models.Desi
 		}
 	}
 
+	instances := int32(0)
+	if r.Spec.Replicas != nil {
+		instances = *r.Spec.Replicas
+	}
+
 	return &models.DesiredLRP{
 		ProcessGuid: guid,
 		LogGuid:     r.Annotations[LOG_GUID_ANNO],
+
+		Instances: instances,
 
 		Routes:          routes,
 		Ports:           ports,
