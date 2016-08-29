@@ -4,6 +4,8 @@ import (
 	"errors"
 	"os/exec"
 
+	"code.cloudfoundry.org/lager/lagertest"
+
 	"github.com/cf-furnace/controller/routing/iptables"
 	"github.com/cf-furnace/controller/routing/iptables/fakes"
 	. "github.com/onsi/ginkgo"
@@ -13,12 +15,14 @@ import (
 var _ = Describe("IPTables", func() {
 	var (
 		runner *fakes.FakeCommandRunner
+		logger *lagertest.TestLogger
 		ipt    iptables.IPTables
 	)
 
 	BeforeEach(func() {
 		runner = &fakes.FakeCommandRunner{}
-		ipt = iptables.New("/bin/echo", runner)
+		logger = lagertest.NewTestLogger("test")
+		ipt = iptables.New(logger, "/bin/echo", runner)
 	})
 
 	Describe("CreateChain", func() {

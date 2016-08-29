@@ -1,0 +1,29 @@
+#!/bin/bash -e
+
+<% require "shellwords" %>
+
+RUN_DIR=/var/vcap/sys/run/controller
+LOG_DIR=/var/vcap/sys/log/controller
+CONF_DIR=/var/vcap/jobs/controller/config
+
+PIDFILE=$RUN_DIR/controller.pid
+
+# Enable maximum OS thread concurrency
+export GOMAXPROCS=$(nproc)
+
+# Work around for GOLANG 1.5.3 DNS bug
+export GODEBUG=netdns=cgo
+
+/var/vcap/packages/controller/bin/endpoint-manager \
+  -dropsondePort=<%= p("controller.dropsonde_port") %> \
+  -debugAddr=<%= p("controller.debug_addr") %> \
+  -syncInterval=<%= "#{p("controller.sync_interval_in_seconds")}s" %> \
+  -logLevel=<%= p("controller.log_level") %> \
+  -kubeCluster=<%= p("kube.cluster.url") %> \
+  -kubeCACert=${CONF_DIR}/certs/kube/ca-cert.pem \
+  -kubeClientCert=${CONF_DIR}/certs/kube/client-cert.pem \
+  -kubeClientKey=${CONF_DIR}/certs/kube/client-key.pem  \
+  -kubeNodeName=<%= "#{name.gsub('_', '-')}-#{spec.index}.node.cf.internal" %> \
+  2> >(tee -a $LOG_DIR/controller.stderr.log | logger -p user.error -t vcap.controller) \
+  1> >(tee -a $LOG_DIR/controller.stdout.log | logger -p user.info -t vcap.controller) & echo $! > $PIDFILE
+

@@ -1,0 +1,5 @@
+check process controller
+  with pidfile /var/vcap/sys/run/controller/controller.pid
+  start program "/var/vcap/jobs/controller/bin/controller_ctl start"
+  stop program "/var/vcap/jobs/controller/bin/controller_ctl stop"
+  group vcap

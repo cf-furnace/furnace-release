@@ -1,6 +1,7 @@
 package routing_test
 
 import (
+	"encoding/json"
 	"os"
 	"time"
 
@@ -234,7 +235,16 @@ var _ = Describe("RouteEmitter", func() {
 
 				Expect(podClient.UpdateCallCount()).To(Equal(1))
 				updated := podClient.UpdateArgsForCall(0)
-				Expect(updated.Annotations[routing.NODE_PORTS_ANNOTATION]).To(MatchJSON(`{"8080":1, "9090":2}`))
+
+				mappings := []routing.PortMapping{
+					{ContainerPort: 8080, NodePort: 1},
+					{ContainerPort: 9090, NodePort: 2},
+				}
+
+				expectedJSON, err := json.Marshal(mappings)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(updated.Annotations[routing.NODE_PORTS_ANNOTATION]).To(MatchJSON(expectedJSON))
 			})
 
 			It("creates a NAT instance chain", func() {
@@ -321,7 +331,15 @@ var _ = Describe("RouteEmitter", func() {
 
 		Context("when a node ports annotation is present", func() {
 			BeforeEach(func() {
-				pod.Annotations = map[string]string{routing.NODE_PORTS_ANNOTATION: `{"8080": 1, "9090": 2}`}
+				mappings := []routing.PortMapping{
+					{ContainerPort: 8080, NodePort: 1},
+					{ContainerPort: 9090, NodePort: 2},
+				}
+
+				js, err := json.Marshal(mappings)
+				Expect(err).NotTo(HaveOccurred())
+
+				pod.Annotations = map[string]string{routing.NODE_PORTS_ANNOTATION: string(js)}
 			})
 
 			It("releases the ports", func() {

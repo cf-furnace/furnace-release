@@ -32,8 +32,8 @@ var dropsondePort = flag.Int(
 	"port the local metron agent is listening on",
 )
 
-var resyncInterval = flag.Duration(
-	"resyncInterval",
+var syncInterval = flag.Duration(
+	"syncInterval",
 	30*time.Second,
 	"interval between route data synchronizations",
 )
@@ -90,7 +90,7 @@ func main() {
 		logger.Fatal("port-pool-new-failed", err)
 	}
 
-	ipt := iptables.New("iptables", linux_command_runner.New())
+	ipt := iptables.New(logger, "iptables", linux_command_runner.New())
 
 	if runtime.GOOS == "linux" {
 		err = iptables.SetupNAT(ipt)
@@ -101,7 +101,7 @@ func main() {
 
 	nodeRouteController := routing.NewNodeRouteController(
 		kubeClient.Core(),
-		*resyncInterval,
+		*syncInterval,
 		*kubeNodeName,
 		portPool,
 		ipt,

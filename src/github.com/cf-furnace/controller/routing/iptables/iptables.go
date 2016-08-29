@@ -7,6 +7,8 @@ import (
 	"strings"
 	"syscall"
 
+	"code.cloudfoundry.org/lager"
+
 	"github.com/cloudfoundry/gunk/command_runner"
 )
 
@@ -42,12 +44,14 @@ type Rule interface {
 }
 
 type iptables struct {
+	logger      lager.Logger
 	commandPath string
 	runner      command_runner.CommandRunner
 }
 
-func New(commandPath string, runner command_runner.CommandRunner) IPTables {
+func New(logger lager.Logger, commandPath string, runner command_runner.CommandRunner) IPTables {
 	return &iptables{
+		logger:      logger.Session("iptables"),
 		commandPath: commandPath,
 		runner:      runner,
 	}
@@ -59,7 +63,11 @@ func (i *iptables) run(action string, args ...string) error {
 }
 
 func (i *iptables) runCommand(action string, command *exec.Cmd) error {
+	i.logger.Info("run-command", lager.Data{"args": command.Args})
+	defer i.logger.Info("run-command-complete")
+
 	if err := i.runner.Run(command); err != nil {
+		i.logger.Error("run-command-failed", err)
 		if exiterr, ok := err.(*exec.ExitError); ok {
 			returnCode := -65535
 			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {

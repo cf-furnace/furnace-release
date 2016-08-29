@@ -1,0 +1,38 @@
+---
+name: controller
+
+templates:
+  controller_ctl.erb: bin/controller_ctl
+  controller_as_vcap.erb: bin/controller_as_vcap
+  kube_ca.crt.erb: config/certs/kube/ca-cert.pem
+  kube_client.crt.erb: config/certs/kube/client-cert.pem
+  kube_client.key.erb: config/certs/kube/client-key.pem
+
+packages:
+  - controller
+  - utils
+
+properties:
+  kube.cluster.url:
+    description: "kubernetes cluster API URL"
+    default: https://kube-apiserver.service.cf.internal:6443
+  kube.cluster.ca_cert:
+    description: "PEM-encoded CA certificate"
+  kube.node.client_cert:
+    description: "PEM-encoded client certificate"
+  kube.node.client_key:
+    description: "PEM-encoded client key"
+
+  controller.debug_addr:
+    description: "address at which to serve debug info"
+    default: "127.0.0.1:18009"
+  controller.sync_interval_in_seconds:
+    description: "Interval to sync routes to the router in seconds."
+    default: 60
+  controller.log_level:
+    description: "Log level"
+    default: "info"
+  controller.dropsonde_port:
+    description: "local metron agent's port"
+    default: 3457
+

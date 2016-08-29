@@ -17,7 +17,7 @@ type Args struct {
 	KubeClientKey  string
 	KubeCluster    string
 	KubeNodeName   string
-	ResyncInterval time.Duration
+	SyncInterval   time.Duration
 }
 
 func (a Args) ArgSlice() []string {
@@ -28,7 +28,7 @@ func (a Args) ArgSlice() []string {
 		"-kubeClientKey", a.KubeClientKey,
 		"-kubeCluster", a.KubeCluster,
 		"-kubeNodeName", a.KubeNodeName,
-		"-resyncInterval", a.ResyncInterval.String(),
+		"-syncInterval", a.SyncInterval.String(),
 	}
 
 	if a.DebugAddress != "" {

@@ -44,6 +44,7 @@ sync_package tps -app github.com/cloudfoundry-incubator/tps/cmd/... &
 sync_package logging-agent -app github.com/cf-furnace/loggingAgent/cmd/... &
 sync_package route_emitter -app github.com/cf-furnace/route-emitter/cmd/... &
 sync_package k8s-stager -app github.com/cf-furnace/k8s-stager/stager/... &
+sync_package controller -app github.com/cf-furnace/controller/routing/cmd/... &
 
 wait
 

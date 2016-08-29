@@ -9,11 +9,13 @@ import (
 	"github.com/cf-furnace/controller/routing/iptables"
 
 	"k8s.io/kubernetes/pkg/api"
+	"k8s.io/kubernetes/pkg/api/errors"
 	"k8s.io/kubernetes/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/client/cache"
 	v1core "k8s.io/kubernetes/pkg/client/clientset_generated/release_1_3/typed/core/v1"
 	"k8s.io/kubernetes/pkg/controller/framework"
 	"k8s.io/kubernetes/pkg/fields"
+	"k8s.io/kubernetes/pkg/labels"
 	"k8s.io/kubernetes/pkg/runtime"
 	"k8s.io/kubernetes/pkg/watch"
 )
@@ -39,7 +41,10 @@ type portPool interface {
 type NodePort uint32
 type ContainerPort uint32
 
-type PortMapping map[ContainerPort]NodePort
+type PortMapping struct {
+	ContainerPort ContainerPort `json:"container_port"`
+	NodePort      NodePort      `json:"node_port"`
+}
 
 type NodeRouteController struct {
 	kubeClient v1core.CoreInterface
@@ -69,14 +74,21 @@ func NewNodeRouteController(
 		localPods:  map[string]*v1.Pod{},
 	}
 
+	labelSelector, err := labels.Parse(PROCESS_GUID_LABEL)
+	if err != nil {
+		return nil
+	}
+
 	nrc.store, nrc.controller = framework.NewInformer(
 		&cache.ListWatch{
 			ListFunc: func(options api.ListOptions) (runtime.Object, error) {
 				options.FieldSelector = fields.Set{"spec.nodeName": nodeName}.AsSelector()
+				options.LabelSelector = labelSelector
 				return coreClient.Pods(api.NamespaceAll).List(options)
 			},
 			WatchFunc: func(options api.ListOptions) (watch.Interface, error) {
 				options.FieldSelector = fields.Set{"spec.nodeName": nodeName}.AsSelector()
+				options.LabelSelector = labelSelector
 				return coreClient.Pods(api.NamespaceAll).Watch(options)
 			},
 		},
@@ -115,35 +127,52 @@ func (nrc *NodeRouteController) OnAdd(obj interface{}) {
 
 func (nrc *NodeRouteController) OnUpdate(old, new interface{}) {
 	newPod := AsPod(new)
-	if newPod != nil {
-		nrc.lock.Lock()
-		defer nrc.lock.Unlock()
-		nrc.localPods[processGuidFromPod(newPod)] = newPod
+	if newPod == nil {
+		return
+	}
+
+	if newPod.Status.HostIP == "" || newPod.Status.PodIP == "" {
+		return
+	}
+
+	nrc.lock.Lock()
+	defer nrc.lock.Unlock()
+
+	_, processed := nrc.localPods[processGuidFromPod(newPod)]
+	if processed {
+		return
 	}
 
 	if _, ok := newPod.Annotations[NODE_PORTS_ANNOTATION]; !ok {
-		mapping, err := nrc.allocatePorts(extractContainerPorts(newPod)...)
+		mappings, err := nrc.allocatePorts(extractContainerPorts(newPod)...)
 		if err != nil {
 			panic(err)
 		}
 
-		marshalledPods, err := json.Marshal(mapping)
+		marshalledPods, err := json.Marshal(mappings)
 		if err != nil {
 			panic(err)
 		}
 
-		nrc.setupNATRules(newPod, mapping)
+		nrc.setupNATRules(newPod, mappings)
 
 		if len(newPod.Annotations) == 0 {
 			newPod.Annotations = map[string]string{}
 		}
 
-		newPod.Annotations[NODE_PORTS_ANNOTATION] = string(marshalledPods)
-		newPod, err = nrc.kubeClient.Pods(newPod.Namespace).Update(newPod)
-		if err != nil {
-			panic(err)
+		for {
+			newPod.Annotations[NODE_PORTS_ANNOTATION] = string(marshalledPods)
+			newPod, err = nrc.kubeClient.Pods(newPod.Namespace).Update(newPod)
+			if err == nil {
+				break
+			}
+			if !errors.IsConflict(err) {
+				panic(err)
+			}
 		}
 	}
+
+	nrc.localPods[processGuidFromPod(newPod)] = newPod
 }
 
 func (nrc *NodeRouteController) OnDelete(obj interface{}) {
@@ -154,19 +183,19 @@ func (nrc *NodeRouteController) OnDelete(obj interface{}) {
 		delete(nrc.localPods, processGuidFromPod(pod))
 
 		if nodePortsAnnotation, ok := pod.Annotations[NODE_PORTS_ANNOTATION]; ok {
-			portMapping := PortMapping{}
-			err := json.Unmarshal([]byte(nodePortsAnnotation), &portMapping)
+			portMappings := []PortMapping{}
+			err := json.Unmarshal([]byte(nodePortsAnnotation), &portMappings)
 			if err != nil {
 				return
 			}
 
-			err = nrc.teardownNATRules(pod, portMapping)
+			err = nrc.teardownNATRules(pod)
 			if err != nil {
 				panic(err)
 			}
 
-			for _, hostPort := range portMapping {
-				nrc.portPool.Release(uint32(hostPort))
+			for _, portMapping := range portMappings {
+				nrc.portPool.Release(uint32(portMapping.NodePort))
 			}
 		}
 	}
@@ -180,18 +209,21 @@ func (nrc *NodeRouteController) Get(processGuid string) (*v1.Pod, bool) {
 	return pod, ok
 }
 
-func (nrc *NodeRouteController) allocatePorts(ports ...ContainerPort) (PortMapping, error) {
-	portMapping := PortMapping{}
+func (nrc *NodeRouteController) allocatePorts(ports ...ContainerPort) ([]PortMapping, error) {
+	portMappings := []PortMapping{}
 
 	for _, containerPort := range ports {
 		nodePort, err := nrc.portPool.Acquire()
 		if err != nil {
 			return nil, err
 		}
-		portMapping[containerPort] = NodePort(nodePort)
+		portMappings = append(portMappings, PortMapping{
+			ContainerPort: containerPort,
+			NodePort:      NodePort(nodePort),
+		})
 	}
 
-	return portMapping, nil
+	return portMappings, nil
 }
 
 func processGuidFromPod(pod *v1.Pod) string {
@@ -212,7 +244,7 @@ func extractContainerPorts(pod *v1.Pod) []ContainerPort {
 	return containerPorts
 }
 
-func (nrc *NodeRouteController) setupNATRules(pod *v1.Pod, mapping PortMapping) error {
+func (nrc *NodeRouteController) setupNATRules(pod *v1.Pod, mappings []PortMapping) error {
 	chainName, err := iptables.InstanceChainName(iptables.InstanceChainPrefix, pod)
 	if err != nil {
 		return err
@@ -228,12 +260,12 @@ func (nrc *NodeRouteController) setupNATRules(pod *v1.Pod, mapping PortMapping) 
 		return err
 	}
 
-	for containerPort, hostPort := range mapping {
+	for _, portMapping := range mappings {
 		err := nrc.ipt.AppendRule(iptables.NAT, chainName, &iptables.DNATRule{
 			HostAddress:      pod.Status.HostIP,
-			HostPort:         int32(hostPort),
+			HostPort:         int32(portMapping.NodePort),
 			ContainerAddress: pod.Status.PodIP,
-			ContainerPort:    int32(containerPort),
+			ContainerPort:    int32(portMapping.ContainerPort),
 		})
 		if err != nil {
 			return err
@@ -243,7 +275,7 @@ func (nrc *NodeRouteController) setupNATRules(pod *v1.Pod, mapping PortMapping) 
 	return nil
 }
 
-func (nrc *NodeRouteController) teardownNATRules(pod *v1.Pod, mapping PortMapping) error {
+func (nrc *NodeRouteController) teardownNATRules(pod *v1.Pod) error {
 	chainName, err := iptables.InstanceChainName(iptables.InstanceChainPrefix, pod)
 	if err != nil {
 		return err
