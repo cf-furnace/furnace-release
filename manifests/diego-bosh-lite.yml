@@ -3,7 +3,7 @@ compilation:
   network: diego1
   reuse_compilation_vms: true
   workers: 3
-director_uuid: 93c01d2d-a2a5-49d8-8d02-389fd223a9cf
+director_uuid: <%= `bosh target lite > /dev/null 2>&1 && bosh status --uuid` %>
 disk_pools:
 - cloud_properties: {}
   disk_size: 1024
@@ -3160,12 +3160,15 @@ properties:
     - 0.0.0.0/0
     destroy_containers_on_start: true
     disk_quota_enabled: null
+    dns_servers: null
     graph_cleanup_threshold_in_mb: 0
     insecure_docker_registry_list: null
     listen_address: 0.0.0.0:7777
     listen_network: tcp
     log_level: debug
+    max_containers: null
     network_mtu: null
+    network_pool: null
     persistent_image_list:
     - /var/vcap/packages/cflinuxfs2/rootfs
   loggregator:
@@ -3178,10 +3181,8 @@ properties:
     tls:
       ca_cert: null
   metron_agent:
-    buffer_size: null
     deployment: cf-warden-diego
     dropsonde_incoming_port: null
-    enable_buffer: null
     etcd:
       client_cert: ""
       client_key: ""
