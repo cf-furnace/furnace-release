@@ -15,6 +15,7 @@ ${workspace_dir}/diego-release/scripts/generate-deployment-manifest \
 spiff merge \
       ${workspace_dir}/furnace-release/manifest-generation/diego-furnace.yml \
       ${workspace_dir}/diego-release/bosh-lite/deployments/diego.yml \
+      ${workspace_dir}/furnace-release/manifest-generation/bosh-lite/director.yml \
       ${workspace_dir}/furnace-release/manifest-generation/release-versions.yml \
       ${workspace_dir}/furnace-release/manifest-generation/config-from-kube.yml \
       ${workspace_dir}/furnace-release/manifest-generation/nsync-properties.yml \
