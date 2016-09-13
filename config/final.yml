@@ -3,5 +3,4 @@ final_name: furnace
 blobstore:
   provider: dav
   options:
-    endpoint: https://blobs.go.dyndns.org:14000
-    ssl_no_verify: true
+    endpoint: https://blobs.go.dyndns.org
