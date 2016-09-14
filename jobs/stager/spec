@@ -59,7 +59,7 @@ properties:
 
   furnace.stager.staging_image:
     description: Image to use for staging.
-    default: viovanov/stager
+    default: cffurnace/stager
 
   furnace.stager.custom_command:
     description: Custom entrypoint to use when running the staging command.
