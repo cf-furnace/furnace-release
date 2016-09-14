@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"k8s.io/kubernetes/pkg/api"
+	"k8s.io/kubernetes/pkg/api/v1"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/release_1_3"
 	v1core "k8s.io/kubernetes/pkg/client/clientset_generated/release_1_3/typed/core/v1"
 	"k8s.io/kubernetes/pkg/labels"
@@ -47,18 +48,18 @@ var _ = Describe("Lifecycle", func() {
 		appGuid := strings.TrimSpace(string(cf.Cf("app", appName, "--guid").Wait(DEFAULT_TIMEOUT).Out.Contents()))
 
 		Eventually(replicationControllers(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(1))
-		Eventually(pods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(1))
+		Eventually(runningPods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(1))
 
 		By("scaling application")
 		Expect(cf.Cf("scale", appName, "-i", "3").Wait(DEFAULT_TIMEOUT)).To(Exit(0))
 
-		Eventually(pods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(3))
+		Eventually(runningPods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(3))
 
 		By("stopping application")
 		Expect(cf.Cf("stop", appName).Wait(DEFAULT_TIMEOUT)).To(Exit(0))
 
 		Eventually(replicationControllers(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(0))
-		Eventually(pods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(0))
+		Eventually(runningPods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(0))
 	})
 
 	It("creates, scales, and deletes docker based application pods", func() {
@@ -73,18 +74,18 @@ var _ = Describe("Lifecycle", func() {
 		appGuid := strings.TrimSpace(string(cf.Cf("app", appName, "--guid").Wait(DEFAULT_TIMEOUT).Out.Contents()))
 
 		Eventually(replicationControllers(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(1))
-		Eventually(pods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(1))
+		Eventually(runningPods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(1))
 
 		By("scaling application")
 		Expect(cf.Cf("scale", appName, "-i", "3").Wait(DEFAULT_TIMEOUT)).To(Exit(0))
 
-		Eventually(pods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(3))
+		Eventually(runningPods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(3))
 
 		By("stopping application")
 		Expect(cf.Cf("stop", appName).Wait(DEFAULT_TIMEOUT)).To(Exit(0))
 
 		Eventually(replicationControllers(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(0))
-		Eventually(pods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(0))
+		Eventually(runningPods(client, appGuid), DEFAULT_TIMEOUT).Should(HaveLen(0))
 	})
 })
 
@@ -107,7 +108,7 @@ func replicationControllers(client v1core.CoreInterface, appGuid string) func() 
 	}
 }
 
-func pods(client v1core.CoreInterface, appGuid string) func() []string {
+func runningPods(client v1core.CoreInterface, appGuid string) func() []string {
 	return func() []string {
 		podList, err := client.Pods(api.NamespaceAll).List(api.ListOptions{
 			LabelSelector: labels.Set{"cloudfoundry.org/app-guid": appGuid}.AsSelector(),
@@ -119,7 +120,9 @@ func pods(client v1core.CoreInterface, appGuid string) func() []string {
 
 		result := []string{}
 		for _, pod := range podList.Items {
-			result = append(result, pod.Name)
+			if pod.Status.Phase == v1.PodRunning {
+				result = append(result, pod.Name)
+			}
 		}
 
 		return result
